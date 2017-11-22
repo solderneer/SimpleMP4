@@ -1,0 +1,36 @@
+[Project ID]
+Signature=UE Proj: v.1
+[Project Information]
+Compilable=1
+Use Relative Directory=1
+Relative to Project File=1
+Project Start=D607070004000600090024000800000023
+Project Directory=C:\RK2608_4G_DEMO
+Include Sub Directories=1
+Project Tagfile=
+Project Wordfile=
+Filter=
+CVS Module=
+Using CVS=0
+Create Tagfile=0
+CTags Legacy Support=0
+Working Time=39444
+[Files]
+0=C:\RK2608_4G_DEMO\
+[uemakeXp]
+ReleaseMode=0
+[Open Files]
+Open File0=C:\RK2608_4G_DEMO\修改历史.txt
+Open File Pos0=184
+Open File Line0=1159
+Open File Window Pos0=0,1,-1,-1,-4,-23,66,66,704,464
+Open File1=C:\RK2608_4G_DEMO\Display\LCD_SSD1289_QVGA.c
+Open File Pos1=6508
+Open File Line1=6400
+活动文件索引=1
+Open File Window Pos1=2,3,-1,-1,-4,-23,110,110,774,517
+Open File2=
+活动文件显示模式=3
+[Folders]
+C:\RK2608_4G_DEMO\=1
+C:\RK2608_4G_DEMO\ - Display=1

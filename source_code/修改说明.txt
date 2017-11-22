@@ -1,0 +1,9 @@
+主要修改部分：
+1、增加了chkdsk.c和chkdsk.h两个文件，该文件的调用形式是：Chkdsk(0)扫描FLASH，Chkdsk(1)扫描SD卡，返回值是OK或ERROR，这里需要注意的是增加了一个DRAM_IDLE数据段，看系统如何定位它。
+
+2、系统参数改用文件的方式保存，涉及到三个函数：FileOpenSys()、FileWriteSys()、FileCloseSys()，这里主要说明一下FileOpenSys()函数，参数1路径用根目录"\\"，参数2是8.3文件名要大写，参数3为属性=ATTR_ARCHIVE | ATTR_READ_ONLY | ATTR_HIDDEN | ATTR_SYSTEM，参数4为读写方式"R"或"W"，当不存在这个文件时，系统将自动创建这个文件。
+
+3、系统上电后需要处理
+	A、录音恢复（是否需要）
+	B、磁盘扫描chkdsk()，有连接上USB才需要调用，也可以在系统工具菜单里调用
+	C、碎片整理，有连接上USB或本地删文件后才需要调用

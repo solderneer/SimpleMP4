@@ -1,0 +1,5 @@
+ 
+//ID3调用说明
+   
+      Find_ID3_TAG(&ID3_INFO,DMA_SECTOR_BUFF0); //数据结构，输入BUFFER
+      如果ID3_INFO.id3_check=1；为没有ID3

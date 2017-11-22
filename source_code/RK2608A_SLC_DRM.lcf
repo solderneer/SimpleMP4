@@ -1,0 +1,288 @@
+/*
+**********************************************************
+*  Copyright (C),2004-2005, Fuzhou Rockchip Co.,Ltd.
+*  Function name : RK2_overlay.lcf
+*  Author:         Huang Jiliu
+*  Description:    实现ROCK2上的MP3等的系统调度
+*  Remark:         
+*                       
+*  History:        
+*           <author>      <time>     <version>       <desc>
+*           HJL          05/12/22      1.0           ORG
+*
+***********************************************************
+*/
+ENTRY(__start)
+
+MEMORY
+{
+    /*IRAM Memory Range 0x0000--0xE000*/
+    IVECTS          :   ORIGIN = 0x0000, LENGTH = 0x0088    /* 17 interrupt vectors of 8 words */
+    IRAM            :   ORIGIN = 0x0088, LENGTH = 0x8000    /*0x6e78*/
+    IRAM_OVR        :   ORIGIN = 0x6800, LENGTH = 0x7100
+    IRAM_OVR1       :   ORIGIN = 0xe000, LENGTH = 0x1800
+    IRAM_OVR2       :   ORIGIN = 0xba00, LENGTH = 0x2600
+    IBOOTROM        :   ORIGIN = 0xf800, LENGTH = 0x0800
+    
+    /*Data Memory Range 0x0000--0xC000*/
+    DRAMDATA        :   ORIGIN = 0x0000, LENGTH = 0x0300
+    DRAMBSS         :   ORIGIN = 0x0300, LENGTH = 0x1300
+    DRAMDATA_OVER   :   ORIGIN = 0x1600, LENGTH = 0xa200    /* Overlap with stack?? */
+    DRAMDATA_OVER1  :   ORIGIN = 0xc000, LENGTH = 0x4000
+}
+
+SECTIONS 
+{
+    /****系统代码保留区****/
+    .vectors    : {
+        *(.vectors); 
+    } > IVECTS
+
+    .text   : {
+        *(.fasttext);
+        *(.text);
+        *(.fat_text);
+        *(.usb_sd);
+        *(.fat_idle_text);
+        *(.flash_init_text);
+        *(.sys_init_text);
+        *(.encode_init_text);
+    } > IRAM
+    
+    /****系统数据保留区****/
+    .bss    : {
+        ___bss_start = .;
+        *(.bss);
+        /**(.fat_bss);*/
+        /**(.usb_bss);*/
+        *(COMMON); 
+        ___bss_end = .;
+    } > DRAMBSS
+ 
+    .data   : {
+        *(.data);
+        *(.fat_data);
+        /**(.firmware_data);*/
+    } > DRAMDATA
+/***********************FUNCTION1 DRAM OVERLAY*********************************/
+    /************** USB *************/
+    .usb_data 0x1640 :{             /*0x1640 + 0x653 = 0x1c93*/
+        *(.usb_data);       
+        *(.firmware_data);/*将固件升级数据和USB的放在一起 2007-8-19*/    
+    }>DRAMDATA_OVER
+
+    .usb_bss 0x1e00 :{             /*0x1e00 + 0x10b2 = 0x2eb2*/
+        *(.usb_bss);
+        *(.firmware_bss);/*将固件升级数据和USB的放在一起 2007-8-19*/
+    }>DRAMDATA_OVER
+    
+    /************** AVI *************/
+    .avi_data 0x1640 :{             /*0x1640 + 0x546e = 0x6aae*/
+        *(.avi_a_data);
+        *(.avi_v_data);     
+    }>DRAMDATA_OVER
+
+    .avi_bss 0x6ac0 :{              /*0x6ac0 + 0x4616 = 0xb0d6*/
+        *(.avi_a_bss);
+        *(.avi_v_bss);
+        /*(.avi_mp2_bss);*/
+    }>DRAMDATA_OVER
+    
+    /************** MP3 *************/
+    .mp3_data 0x1640 :{             /*0x1640 + 0x2f94 = 0x45d4*/
+        *(.mp3_data);               /*有部分结构体不能跨越0x8000*/
+    }>DRAMDATA_OVER 
+
+    .mp3_bss 0x5456 :{              /*0x5456 + 0x45a9 = 0x99ff*/
+        *(.mp3_bss);
+        *(.mp3_tst);
+    }>DRAMDATA_OVER 
+    /************** WAV *************/
+    .wav_bss 0x1640 :{              /*0x1640 + 0x3024 = 0x4664*/
+        *(.wav_tst);
+        *(.wav_bss);
+    }>DRAMDATA_OVER 
+
+    .wav_data 0x4680 :{             /*0x4680 + 0x001e = 0x469e*/
+        *(.wav_data);
+    }>DRAMDATA_OVER 
+    
+    /************ ENCODE ************/
+    .enc_bss  0x1640 :{             /*0x1640 + 0x4db3 = 0x63f3*/
+        *(.enc_bss);
+        *(.EncoderBss);
+    }>DRAMDATA_OVER 
+
+    .enc_data  0x640e :{            /*0x640e + 0x48b4 = 0xacc2*/
+        *(.EncoderData);            /*结构体不能垮月0x8000*/
+        *(.enc_data);
+    }>DRAMDATA_OVER 
+    
+    /************** FM **************/
+    .fm_bss  0x1640 :{              /*0x1640 + 0x002f = 0x166f*/
+        *(.fm_bss);
+    }>DRAMDATA_OVER 
+
+    .fm_data  0x1840 :{             /*0x1840 + 0x0000 = 0x1840*/
+        *(.fm_data);
+    }>DRAMDATA_OVER 
+    
+    /************** WMA *************/
+    .wma_bss 0x1600 :{              /*0x1600 + 0x8394 = 0x9994*/
+        *(.wma_bss);   
+        *(.WmaGlobalData);          /* ahead 7fff          */
+        *(.WMA_Buff); 
+        *(.WmaEqBss);
+        *(.WMATableRunDram);
+        *(.bufferdata);    
+    }>DRAMDATA_OVER
+    
+    .wma_data 0xa1c0 :{             /*0xa1e0 + 0x0fa8 = 0xb168*/
+        *(.wma_data);
+        *(.WmaIntiTable);
+        *(.WmaDecoderTable);
+        *(.wmabarktable);
+        *(.WmaEqData);
+        *(.DRMInitData);
+        *(.DRMGlobalData);
+    }>DRAMDATA_OVER
+    
+    .wma_table 0x1600 :{        
+         *(.wmatable440b);
+         *(.wmatable160b);
+         *(.wmatable44Qb);
+    }>DRAMDATA_OVER
+    
+/***********************FUNCTION2 DRAM OVERLAY*********************************/
+    /************** JPEG *************/
+    /*按计算，该地址应该从0x8e00 开始，但
+      此时FUNCTION2的空间不够用，因此暂时向前提，但此时不能同时处理两个模块
+      也就是说如果要实现MP3与JPEG的共存，DRAM现在是缺少3K*/
+    .jpeg_bss 0x1640 :{             /*0x1640 + 0x73c1 = 0x8a01*/
+        *(.bmp_bss);
+        *(.jpeg_bss); 
+    }>DRAMDATA_OVER
+       
+    .jpeg_data 0x8c00: {            /*0x8c00 + 0x03ac = 0x8fab*/
+        *(.bmp_data);
+        *(.jpeg_data);
+    }>DRAMDATA_OVER   
+    
+    /************** GAME *************/
+    .game_data 0xb1e0 :{            /*0xb200 + 0x0287 = 0xb487*/
+        *(.game_data);
+    }>DRAMDATA_OVER 
+    
+    .game_bss 0xb6f0 :{             /*0xb490 + 0x0111 = 0xb5a1*/
+        *(.game_bss);
+    }>DRAMDATA_OVER
+    
+    /************ SETMENU ***********/
+	.setmenu_bss 0xb200 :{          /*0xb200 + 0x000e = 0xb20e*/
+	    *(.setmenu_bss);
+	}>DRAMDATA_OVER	
+
+	.setmenu_data 0xb280 :{         /*0xb280 + 0x0005 = 0xb285*/
+	    *(.setmenu_data);
+	}>DRAMDATA_OVER
+
+    /************** TXT *************/
+    .txt_bss 0xb200 :{              /*0xb200 + 0x0536 = 0xb736*/
+        *(.txt_bss);
+        /**(.setmenu_bss);*/
+    }>DRAMDATA_OVER
+       
+    .txt_data 0xb740: {             /*0xb740 + 0x0000 = 0xb740*/
+        *(.txt_data);
+        /**(.setmenu_data);*/
+    }>DRAMDATA_OVER
+    /**************MP3 LRC ***********/
+    .lrc_bss 0xb200 :{              /*0xb200 + 0x0407 = 0xb607*/
+        *(.lrc_bss);
+    }>DRAMDATA_OVER
+       
+    .lrc_data 0xb610: {             /*0xb610 + 0x0000 = 0xb610*/
+        *(.lrc_data);
+    }>DRAMDATA_OVER
+    
+    /**************WMA LRC ***********/
+    .wmalrc_bss 0xb200 :{           /*0xb200 + 0x0407 = 0xb607*/
+        *(.wmalrc_bss);
+    }>DRAMDATA_OVER
+       
+    .wmalrc_data 0xb610: {          /*0xb610 + 0x0000 = 0xb610*/
+        *(.wmalrc_data);
+    }>DRAMDATA_OVER
+    
+/***************************FUNCTION1 IRAM OVERLAY*****************************/
+/*--------------------------------------------*/
+    OVERLAY 0x6800 : /*0x6f00*/{
+        /* AVI decoder */
+        .exttext_0 {                    
+            *(.avi_v_text);
+            *(.avi_a_text);
+           /* *(.avi_mp2_bss);*/            
+        }
+        
+        /* MP3 decoder */
+        .exttext_1 {
+            *(.mp3_text);                  
+        }
+
+        .exttext_2 { 
+            *(.jpeg_text);            
+        }                
+        
+        /* WMA decoder */
+        .exttext_3 {
+            *(.wma_text);
+            *(.WmaIntiText);
+            *(.WmaEqText);
+            *(.WmaDecoderText);
+            *(.WmaGlobalText);
+            *(.DRMIntiText);
+            *(.DRMDecryptText);
+        }        
+        .exttext_4 {
+            *(.encode_text);
+            *(.enc_text);
+            *(.EncoderText);
+        }
+        .exttext_5 {
+            *(.fm_text);
+        }
+        .exttext_7 {
+            *(.usb_text);
+            *(.firmware_text);/*将固件升级代码和USB放在一起 2007-8-19*/
+        }
+        .exttext_8 {
+            *(.wav_text);
+        }
+        
+    }>IRAM_OVR
+
+    /*.avi_mp2_bss 0xae30 : {
+        *(.avi_mp2_bss);
+    } > IRAM_OVR*/
+
+/***************************FUNCTION2 IRAM OVERLAY*****************************/
+    OVERLAY 0xc400 :{     /*0xbe00*/          
+
+        .exttext_6 {
+            *(.txt_text);
+        }
+        .exttext_9{
+            *(.game_text);
+        }
+        
+        .exttext_10{
+            *(.setmenu_text);
+        }
+        
+    }>IRAM_OVR2
+/*****************************************************************************/    
+        /* Stack should not cross 0x7fff to 0x8000 boundary */
+    __stack_end = 0xb800;       /* Enable linker to identify if enough      */
+    __stack_start = 0xbfff;     /* Stack grows down from here */    
+                                /* 0xbfff - 0xb400 = 3k */
+}

@@ -1,0 +1,289 @@
+/*
+**********************************************************
+*  Copyright (C),2004-2005, Fuzhou Rockchip Co.,Ltd.
+*  Function name : RK2_overlay.lcf
+*  Author:         Huang Jiliu
+*  Description:    实现ROCK2上的MP3等的系统调度
+*  Remark:         
+*                       
+*  History:        
+*           <author>      <time>     <version>       <desc>
+*           HJL          05/12/22      1.0           ORG
+*
+***********************************************************
+*/
+ENTRY(__start)
+
+MEMORY
+{
+    /*IRAM Memory Range 0x0000--0xE000*/
+    IVECTS          :   ORIGIN = 0x0000, LENGTH = 0x0088    /* 17 interrupt vectors of 8 words */
+    IRAM            :   ORIGIN = 0x0088, LENGTH = 0x8800
+    IRAM_OVR        :   ORIGIN = 0x7600, LENGTH = 0x6A00
+    IRAM_OVR1       :   ORIGIN = 0xe000, LENGTH = 0x1800
+    IRAM_OVR2       :   ORIGIN = 0xc000, LENGTH = 0x2000
+    IBOOTROM        :   ORIGIN = 0xf800, LENGTH = 0x0800
+    
+    /*Data Memory Range 0x0000--0xC000*/
+    DRAMDATA        :   ORIGIN = 0x0000, LENGTH = 0x0640
+    DRAMBSS         :   ORIGIN = 0x0640, LENGTH = 0x1340
+    DRAMDATA_OVER   :   ORIGIN = 0x1980, LENGTH = 0x9f00    /* Overlap with stack?? */
+    DRAMDATA_OVER1  :   ORIGIN = 0xc000, LENGTH = 0x4000
+}
+
+SECTIONS 
+{
+    /****系统代码保留区****/
+    .vectors    : {
+        *(.vectors); 
+    } > IVECTS
+
+    .text   : {
+        *(.fasttext);
+        *(.text);
+        *(.fat_text);
+        *(.usb_sd);
+        *(.fat_idle_text);
+        *(.flash_init_text);
+        *(.sys_init_text);
+        *(.encode_init_text);
+    } > IRAM
+    
+    /****系统数据保留区****/
+    .bss    : {
+        ___bss_start = .;
+        *(.bss);
+        /**(.fat_bss);*/
+        /**(.usb_bss);*/
+        *(COMMON); 
+        ___bss_end = .;
+    } > DRAMBSS
+ 
+    .data   : {
+        *(.data);
+        *(.fat_data);
+        /**(.firmware_data);*/
+    } > DRAMDATA
+/***********************FUNCTION1 DRAM OVERLAY*********************************/
+    /************** USB *************/
+    .usb_data 0x1980 :{             /*0x1980 + 0x1662 = 0x2fe2*/
+        *(.encode_data);            /*必须和 *(.encode_data1); 分配在相同的内存空间*/
+        *(.usb_data);       
+        *(.firmware_data);          /*将固件升级数据和USB的放在一起 2007-8-19*/    
+    }>DRAMDATA_OVER
+
+    .usb_bss 0x3000 :{              /*0x3000 + 0x174c = 0x47c4*/
+        *(.usb_bss);
+        *(.firmware_bss);           /*将固件升级数据和USB的放在一起 2007-8-19*/
+    }>DRAMDATA_OVER
+    
+    /************** AVI *************/
+    .avi_bss 0x1980 :{              /*0x1980 + 0x4616 = 0x5f96*/
+        *(.avi_a_bss);
+        *(.avi_v_bss);
+        /*(.avi_mp2_bss);*/
+    }>DRAMDATA_OVER
+    
+    .avi_data 0x6000 :{             /*0x6000 + 0x546e = 0xb46e*/
+        *(.avi_a_data);
+        *(.avi_v_data);     
+    }>DRAMDATA_OVER
+
+    /************** MP3 *************/
+    .mp3_data 0x1980 :{             /*0x1980 + 0x2f94 = 0x4914*/
+        *(.mp3_data);               /*有部分结构体不能跨越0x8000*/
+    }>DRAMDATA_OVER 
+
+    .mp3_bss 0x5456 :{              /*0x5456 + 0x45a9 = 0x99ff*/
+        *(.mp3_bss);                /*有部分结构体不能跨越0x8000*/
+        *(.mp3_tst);
+    }>DRAMDATA_OVER 
+    /************** WAV *************/
+    .wav_bss 0x1980 :{              /*0x1980 + 0x3024 = 0x49a4*/
+        *(.wav_tst);
+        *(.wav_bss);
+    }>DRAMDATA_OVER 
+
+    .wav_data 0x4a00 :{             /*0x4b80 + 0x001e = 0x4b9e*/
+        *(.wav_data);
+    }>DRAMDATA_OVER 
+    
+    /************ ENCODE ************/
+    .enc_data  0x1980 :{            /*0x1980 + 0x101e = 0x299e*/
+        *(.encode_data1);           /*必须和 *(.encode_data); 分配在相同的内存空间*/
+        *(.EncoderData);            /*结构体不能垮月0x8000*/
+        *(.enc_data);
+    }>DRAMDATA_OVER 
+
+    .enc_bss  0x2a00 :{             /*0x2a00 + 0x7e3e = 0xa83e*/
+        *(.EncoderBss);             /*现在不支持LINE IN录音，所以把MP3录音的数据结构丢掉，预防堆栈溢出，
+                                     如果要加入该数据结构的话，需要改 __stack_end = 0xbC80; */
+    }>DRAMDATA_OVER 
+    
+    .enc_bss1  0x2a00 :{            /*0x3480 + 0x53b4 = 0x8834*/
+		*(.EncoderBss);             /*enc_bss1 中的是MP3录音的数据结构，和enc_bss OVERLAY在一起*/
+	}>DRAMDATA_OVER	
+
+    /************** FM **************/
+    .fm_bss  0x1980 :{              /*0x1980 + 0x002f = 0x1b8f*/
+        *(.fm_bss);
+    }>DRAMDATA_OVER 
+
+    .fm_data  0x1b00 :{             /*0x1c00 + 0x0000 = 0x1c00*/
+        *(.fm_data);
+    }>DRAMDATA_OVER 
+    
+    /************** WMA *************/
+    .wma_bss 0x1980 :{              /*0x1980 + 0x8134 = 0x9ab4*/
+        *(.wma_bss);   
+        *(.WmaGlobalData);          /* ahead 7fff          */
+        *(.WMA_Buff); 
+        *(.WmaEqBss);
+        *(.WMATableRunDram);
+        *(.bufferdata);    
+    }>DRAMDATA_OVER
+    
+    .wma_data 0x9b00 :{             /*0x9b00 + 0x7f5 = 0xa2f5*/
+        *(.wma_data);
+        *(.WmaIntiTable);
+        *(.WmaDecoderTable);
+        *(.wmabarktable);
+        *(.WmaEqData);
+    }>DRAMDATA_OVER
+    
+    .wma_table 0x1980 :{        
+         *(.wmatable440b);
+         *(.wmatable160b);
+         *(.wmatable44Qb);
+    }>DRAMDATA_OVER
+    
+/***********************FUNCTION2 DRAM OVERLAY*********************************/
+    /************** JPEG *************/
+    /*按计算，该地址应该从0x8e00 开始，但
+      此时FUNCTION2的空间不够用，因此暂时向前提，但此时不能同时处理两个模块
+      也就是说如果要实现MP3与JPEG的共存，DRAM现在是缺少3K*/
+    .jpeg_bss 0x1980 :{             /*0x1980 + 0x73c1 = 0x8d41*/
+        *(.bmp_bss);
+        *(.jpeg_bss);        
+    }>DRAMDATA_OVER
+       
+    .jpeg_data 0x9000: {            /*0x7080 + 0x03ac = 0x642c*/
+        *(.bmp_data);
+        *(.jpeg_data);
+    }>DRAMDATA_OVER   
+    
+    /************** GAME *************/
+    .game_data 0xab00 :{            /*0xac80 + 0x0287 = 0xaf07*/
+        *(.game_data);
+    }>DRAMDATA_OVER 
+    
+    .game_bss 0xb100 :{             /*0xaf10 + 0x0111 = 0xb021*/
+        *(.game_bss);
+    }>DRAMDATA_OVER
+    
+    /************ SETMENU ***********/
+	.setmenu_bss 0xab00 :{          /*0xac80 + 0x000e = 0xac8e*/
+	    *(.setmenu_bss);
+	}>DRAMDATA_OVER	
+
+	.setmenu_data 0xac00 :{         /*0xad00 + 0x0005 = 0xad05*/
+	    *(.setmenu_data);
+	}>DRAMDATA_OVER
+
+    /************** TXT *************/
+    .txt_bss 0xab00 :{              /*0xac80 + 0x0536 = 0xb1b6*/
+        *(.txt_bss);
+        /**(.setmenu_bss);*/
+    }>DRAMDATA_OVER
+       
+    .txt_data 0xb080: {             /*0xb200 + 0x0000 = 0xb200*/
+        *(.txt_data);
+        /**(.setmenu_data);*/
+    }>DRAMDATA_OVER
+    /**************MP3 LRC ***********/
+    .lrc_bss 0xab00 :{              /*0xac80 + 0x0407 = 0xb087*/
+        *(.lrc_bss);
+    }>DRAMDATA_OVER
+       
+    .lrc_data 0xb000: {             /*0xb100 + 0x0000 = 0xb100*/
+        *(.lrc_data);
+    }>DRAMDATA_OVER
+    
+    /**************WMA LRC ***********/
+    .wmalrc_bss 0xab00 :{           /*0xac80 + 0x0407 = 0xb087*/
+        *(.wmalrc_bss);
+    }>DRAMDATA_OVER
+       
+    .wmalrc_data 0xb000: {          /*0xb100 + 0x0000 = 0xb100*/
+        *(.wmalrc_data);
+    }>DRAMDATA_OVER
+    
+/***************************FUNCTION1 IRAM OVERLAY*****************************/
+/*--------------------------------------------*/
+    OVERLAY 0x7600 : /*0x6f00*/{
+        /* AVI decoder */
+        .exttext_0 {                    
+            *(.avi_v_text);
+            *(.avi_a_text);
+           /* *(.avi_mp2_bss);*/            
+        }
+        
+        /* MP3 decoder */
+        .exttext_1 {
+            *(.mp3_text);                  
+        }
+
+        .exttext_2 { 
+            *(.jpeg_text);            
+            *(.bmp_text);        
+        }                
+        
+        /* WMA decoder */
+        .exttext_3 {
+            *(.wma_text);
+            *(.WmaIntiText);
+            *(.WmaEqText);
+            *(.WmaDecoderText);
+            *(.WmaGlobalText);
+        }        
+        .exttext_4 {
+            *(.encode_text);
+            *(.enc_text);
+            *(.EncoderText);
+        }
+        .exttext_5 {
+            *(.fm_text);
+        }
+        .exttext_7 {
+            *(.usb_text);
+            *(.firmware_text);/*将固件升级代码和USB放在一起 2007-8-19*/
+        }
+        .exttext_8 {
+            *(.wav_text);
+        }
+        
+    }>IRAM_OVR
+
+    /*.avi_mp2_bss 0xae30 : {
+        *(.avi_mp2_bss);
+    } > IRAM_OVR*/
+
+/***************************FUNCTION2 IRAM OVERLAY*****************************/
+    OVERLAY 0xc000 :{     /*0xbe00*/          
+        .exttext_6 {
+            *(.txt_text);
+        }
+        .exttext_9{
+            *(.game_text);
+        }
+        
+        .exttext_10{
+            *(.setmenu_text);
+        }
+    }>IRAM_OVR2
+/*****************************************************************************/    
+        /* Stack should not cross 0x7fff to 0x8000 boundary */
+    __stack_end = 0xb800;       /* Enable linker to identify if enough*/
+    __stack_start = 0xbfff;     /* Stack grows down from here */    
+                                /* 0xbfff - 0xb400 = 3k */
+}
