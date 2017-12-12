@@ -1,4 +1,4 @@
-update=Tuesday, December 12, 2017 'PMt' 02:50:33 PM
+update=Tuesday, December 12, 2017 'PMt' 03:45:46 PM
 version=1
 last_client=kicad
 [pcbnew]
@@ -23,9 +23,11 @@ ModuleOutlineThickness=0.150000000000
 [cvpcb]
 version=1
 NetIExt=net
+[general]
+version=1
 [eeschema]
 version=1
-LibDir=
+LibDir=library
 [eeschema/libraries]
 LibName1=power
 LibName2=device
@@ -56,5 +58,7 @@ LibName26=opto
 LibName27=atmel
 LibName28=contrib
 LibName29=valves
-[general]
-version=1
+LibName30=library/SS312SAH4-R
+LibName31=library/SI2323CDS-T1-GE3
+LibName32=library/SKHLAAA010
+LibName33=library/ocp8020
