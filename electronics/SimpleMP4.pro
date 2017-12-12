@@ -1,4 +1,4 @@
-update=Tuesday, December 12, 2017 'PMt' 03:45:46 PM
+update=Tuesday, December 12, 2017 'PMt' 04:20:42 PM
 version=1
 last_client=kicad
 [pcbnew]
@@ -62,3 +62,5 @@ LibName30=library/SS312SAH4-R
 LibName31=library/SI2323CDS-T1-GE3
 LibName32=library/SKHLAAA010
 LibName33=library/ocp8020
+LibName34=library/ocp7190
+LibName35=library/sct102bc
