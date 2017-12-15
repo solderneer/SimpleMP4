@@ -1,4 +1,4 @@
-update=Friday, December 15, 2017 'PMt' 03:42:45 PM
+update=Friday, December 15, 2017 'PMt' 04:34:32 PM
 version=1
 last_client=kicad
 [pcbnew]
@@ -70,3 +70,4 @@ LibName38=library/cr1937
 LibName39=library/K9HCG08U1M
 LibName40=library/K4S641632N
 LibName41=library/RK2608
+LibName42=library/ocp1240
