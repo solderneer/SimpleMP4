@@ -1,4 +1,4 @@
-update=Wednesday, December 13, 2017 'AMt' 09:50:20 AM
+update=Friday, December 15, 2017 'AMt' 09:05:55 AM
 version=1
 last_client=kicad
 [pcbnew]
@@ -67,3 +67,4 @@ LibName35=library/sct102bc
 LibName36=library/sd_socket
 LibName37=library/ocp21050tw18a
 LibName38=library/cr1937
+LibName39=library/K9HCG08U1M
