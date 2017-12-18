@@ -1,4 +1,4 @@
-update=Monday, December 18, 2017 'AMt' 11:24:35 AM
+update=Monday, December 18, 2017 'AMt' 11:56:15 AM
 version=1
 last_client=kicad
 [pcbnew]
@@ -72,3 +72,4 @@ LibName40=library/K4S641632N
 LibName41=library/RK2608
 LibName42=library/ocp1240
 LibName43=library/zled7012
+LibName44=library/trs_5pin
