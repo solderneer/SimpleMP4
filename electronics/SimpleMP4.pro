@@ -1,4 +1,4 @@
-update=Friday, December 15, 2017 'PMt' 04:34:32 PM
+update=Monday, December 18, 2017 'AMt' 11:24:35 AM
 version=1
 last_client=kicad
 [pcbnew]
@@ -71,3 +71,4 @@ LibName39=library/K9HCG08U1M
 LibName40=library/K4S641632N
 LibName41=library/RK2608
 LibName42=library/ocp1240
+LibName43=library/zled7012
