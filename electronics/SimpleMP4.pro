@@ -1,4 +1,4 @@
-update=Monday, December 18, 2017 'PMt' 02:18:04 PM
+update=Wednesday, December 20, 2017 'PMt' 01:33:51 PM
 version=1
 last_client=kicad
 [pcbnew]
@@ -58,19 +58,4 @@ LibName26=opto
 LibName27=atmel
 LibName28=contrib
 LibName29=valves
-LibName30=library/SS312SAH4-R
-LibName31=library/SI2323CDS-T1-GE3
-LibName32=library/SKHLAAA010
-LibName33=library/ocp8020
-LibName34=library/ocp7190
-LibName35=library/sct102bc
-LibName36=library/sd_socket
-LibName37=library/ocp21050tw18a
-LibName38=library/cr1937
-LibName39=library/K9HCG08U1M
-LibName40=library/K4S641632N
-LibName41=library/RK2608
-LibName42=library/ocp1240
-LibName43=library/zled7012
-LibName44=library/trs_5pin
-LibName45=library/mt25ql128aba
+LibName30=library/SimpleMP4
