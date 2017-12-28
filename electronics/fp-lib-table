@@ -4,4 +4,5 @@
   (lib (name SS312SAH4-R)(type Legacy)(uri "$(KIPRJMOD)/footprints/SS312SAH4-R.mod")(options "")(descr ""))
   (lib (name TSOP-54)(type Legacy)(uri "$(KIPRJMOD)/footprints/TSOP-54.mod")(options "")(descr ""))
   (lib (name footprints)(type KiCad)(uri "$(KIPRJMOD)/footprints/footprints.pretty")(options "")(descr ""))
+  (lib (name HP0315AFKP4-R)(type Legacy)(uri "$(KIPRJMOD)/footprints/HP0315AFKP4-R.mod")(options "")(descr ""))
 )
