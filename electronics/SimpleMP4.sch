@@ -813,10 +813,6 @@ Text Label 9200 5100 0    60   ~ 0
 FCE0
 Text Label 9200 5200 0    60   ~ 0
 FCE1
-Text Label 9200 5600 0    60   ~ 0
-I2C_SDA
-Text Label 9200 5700 0    60   ~ 0
-I2C_SCL
 Text Label 9200 5800 0    60   ~ 0
 FCLE/A2
 Text Label 9200 5900 0    60   ~ 0
@@ -2586,10 +2582,6 @@ Wire Wire Line
 Wire Wire Line
 	9200 5500 9650 5500
 Wire Wire Line
-	9650 5600 9200 5600
-Wire Wire Line
-	9650 5700 9200 5700
-Wire Wire Line
 	9650 5800 9200 5800
 Wire Wire Line
 	9650 5900 9200 5900
@@ -3341,7 +3333,7 @@ Wire Wire Line
 	14100 3150 14000 3150
 Connection ~ 12500 2750
 Wire Wire Line
-	12500 3150 13700 3150
+	13700 3150 12500 3150
 Wire Wire Line
 	12500 3150 12500 3100
 Wire Wire Line
@@ -3472,7 +3464,9 @@ F 3 "" H 13850 3150 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	13700 3150 13700 2850
+	13700 2850 13700 3150
 Connection ~ 13700 2950
 Connection ~ 13700 3050
+NoConn ~ 9650 5600
+NoConn ~ 9650 5700
 $EndSCHEMATC
