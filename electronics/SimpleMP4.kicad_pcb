@@ -3780,11 +3780,11 @@
     )
   )
 
-  (module SS312SAH4-R:SW_SS312SAH4-R (layer F.Cu) (tedit 5A473D4C) (tstamp 5A3D9EB1)
+  (module SS312SAH4-R:SW_SS312SAH4-R (layer F.Cu) (tedit 5A4ED3D3) (tstamp 5A3D9EB1)
     (at 189.9285 67.056 270)
     (path /5A2F886F)
     (attr smd)
-    (fp_text reference S1 (at 1.905 -4.7625 360) (layer F.SilkS)
+    (fp_text reference S1 (at 1.905 -4.1275 360) (layer F.SilkS)
       (effects (font (size 1 1) (thickness 0.15)))
     )
     (fp_text value ON/OFF (at -1.8 6.65 270) (layer F.SilkS)
@@ -5867,7 +5867,7 @@
     )
   )
 
-  (gr_text v1.0.0/30.12.2017 (at 82.296 122.936) (layer F.SilkS)
+  (gr_text v1.4/30.12.2017 (at 81.661 122.936) (layer F.SilkS)
     (effects (font (size 1 1) (thickness 0.15)))
   )
   (gr_text Sudharshan (at 107.061 119.761) (layer F.SilkS)
